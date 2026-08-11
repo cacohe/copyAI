@@ -59,7 +59,12 @@ export function useHistory() {
         item.content === input.content
     )
 
-    return match ?? formattedHistory[0] ?? {
+    const selected = match ?? formattedHistory[0]
+    if (selected) {
+      setSelectedHistory(selected.id)
+    }
+
+    return selected ?? {
       id: Date.now().toString(),
       platform: input.platform,
       topic: input.topic,
@@ -68,9 +73,16 @@ export function useHistory() {
     }
   }
 
+  const clearSelection = () => {
+    setSelectedHistory(null)
+  }
+
   const selectHistory = (item: HistoryItem) => {
     setSelectedHistory(item.id)
   }
+
+  const selectedHistoryItem =
+    history.find((item) => item.id === selectedHistory) ?? null
 
   const deleteHistory = async (id: string) => {
     const previous = history
@@ -105,10 +117,12 @@ export function useHistory() {
   return {
     history,
     selectedHistory,
+    selectedHistoryItem,
     isLoading,
     error,
     addToHistory,
     selectHistory,
+    clearSelection,
     deleteHistory,
     clearHistory,
     reloadHistory: loadHistory,

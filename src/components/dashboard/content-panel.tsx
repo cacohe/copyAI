@@ -9,15 +9,16 @@ interface ContentPanelProps {
   isGenerating: boolean
   platform: string
   topic: string
+  platformLabel?: string
   onRegenerate: () => void
 }
 
-// 文案内容面板
 export function ContentPanel({
   content,
   isGenerating,
   platform,
   topic,
+  platformLabel,
   onRegenerate,
 }: ContentPanelProps) {
   const { t } = useLanguage()
@@ -26,13 +27,24 @@ export function ContentPanel({
   const canRegenerate = !isGenerating && platform && topic
 
   return (
-    <main className="flex flex-1 flex-col overflow-hidden p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <div>
+    <main className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div className="min-w-0">
           <h2 className="text-lg font-semibold">{t("dashboard.result")}</h2>
-          <p className="text-sm text-muted-foreground">
-            {t("dashboard.resultDesc")}
-          </p>
+          {topic ? (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {platformLabel ? (
+                <span className="mr-2 rounded bg-accent/20 px-2 py-0.5 text-xs text-accent">
+                  {platformLabel}
+                </span>
+              ) : null}
+              <span className="truncate">{topic}</span>
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {t("dashboard.resultDesc")}
+            </p>
+          )}
         </div>
         {content && (
           <div className="flex items-center gap-2">

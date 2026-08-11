@@ -49,5 +49,6 @@ export function useContentGenerator() {
     setKeywords,
     setGeneratedContent,
     handleGenerate,
+    getPlatformLabel,
   }
 }

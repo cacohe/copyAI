@@ -15,7 +15,10 @@ export default clerkMiddleware(async (auth, request) => {
     await auth.protect()
   }
 
-  if (userId && (pathname === '/login' || pathname === '/register')) {
+  if (
+    userId &&
+    (pathname === '/' || pathname === '/login' || pathname === '/register')
+  ) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 })

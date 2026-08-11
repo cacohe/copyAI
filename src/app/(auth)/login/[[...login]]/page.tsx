@@ -9,6 +9,8 @@ export default function LoginPage() {
       path="/login"
       signUpUrl="/register"
       forceRedirectUrl="/dashboard"
+      fallbackRedirectUrl="/dashboard"
+      signUpForceRedirectUrl="/dashboard"
     />
   )
 }

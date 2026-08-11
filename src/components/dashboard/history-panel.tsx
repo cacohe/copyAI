@@ -22,20 +22,22 @@ export function HistoryPanel({
   const { t } = useLanguage()
 
   return (
-    <aside className="flex w-80 shrink-0 flex-col border-l border-border bg-card">
+    <aside className="flex h-full min-h-0 w-80 shrink-0 flex-col border-l border-border bg-card">
       <HistoryHeader historyCount={history.length} />
-      <ScrollArea className="flex-1">
-        {history.length > 0 ? (
-          <HistoryList
-            history={history}
-            selectedHistory={selectedHistory}
-            onSelectHistory={onSelectHistory}
-            onDeleteHistory={onDeleteHistory}
-          />
-        ) : (
-          <EmptyHistory />
-        )}
-      </ScrollArea>
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <ScrollArea className="h-full">
+          {history.length > 0 ? (
+            <HistoryList
+              history={history}
+              selectedHistory={selectedHistory}
+              onSelectHistory={onSelectHistory}
+              onDeleteHistory={onDeleteHistory}
+            />
+          ) : (
+            <EmptyHistory />
+          )}
+        </ScrollArea>
+      </div>
     </aside>
   )
 }
@@ -104,10 +106,18 @@ function HistoryItemCard({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       className={`group cursor-pointer p-4 transition-colors hover:bg-secondary ${
-        isSelected ? "bg-secondary" : ""
+        isSelected ? "bg-secondary ring-1 ring-inset ring-accent/40" : ""
       }`}
       onClick={onSelect}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          onSelect()
+        }
+      }}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
