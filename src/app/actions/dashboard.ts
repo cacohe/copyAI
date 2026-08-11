@@ -1,7 +1,6 @@
 'use server'
 
 import { requireAuthUserId } from '@/lib/auth/session'
-import { checkContentSafe } from '@/services/dashboard/moderation'
 import { generateAIContent } from '@/services/dashboard/ai'
 import { createGeneratedContent } from '@/services/dashboard/contents'
 import {
@@ -11,7 +10,6 @@ import {
 } from '@/services/dashboard/history'
 import type { HistoryItem } from '@/types/dashboard/history'
 
-// 按照输入要求，生成文案
 export async function generateDashboardContent(input: {
   platform: string
   topic: string
@@ -19,11 +17,6 @@ export async function generateDashboardContent(input: {
 }): Promise<string> {
   const userId = await requireAuthUserId()
   const { platform, topic, keywords = '' } = input
-
-  const isSafe = await checkContentSafe(`${topic} ${keywords}`)
-  if (!isSafe) {
-    throw new Error('输入包含违规词')
-  }
 
   const content = await generateAIContent(platform, topic, keywords)
 

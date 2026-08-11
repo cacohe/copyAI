@@ -2,17 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   requireAuthUserId: vi.fn(),
-  checkContentSafe: vi.fn(),
   generateAIContent: vi.fn(),
   createGeneratedContent: vi.fn(),
 }))
 
 vi.mock('@/lib/auth/session', () => ({
   requireAuthUserId: mocks.requireAuthUserId,
-}))
-
-vi.mock('@/services/dashboard/moderation', () => ({
-  checkContentSafe: mocks.checkContentSafe,
 }))
 
 vi.mock('@/services/dashboard/ai', () => ({
@@ -29,7 +24,6 @@ describe('generateDashboardContent', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mocks.requireAuthUserId.mockResolvedValue('user-1')
-    mocks.checkContentSafe.mockResolvedValue(true)
     mocks.generateAIContent.mockResolvedValue('生成结果')
     mocks.createGeneratedContent.mockResolvedValue(undefined)
   })
@@ -50,13 +44,5 @@ describe('generateDashboardContent', () => {
       keywords: '保湿',
       content: '生成结果',
     })
-  })
-
-  it('throws when content is not safe', async () => {
-    mocks.checkContentSafe.mockResolvedValue(false)
-
-    await expect(
-      generateDashboardContent({ platform: '微博', topic: '测试' })
-    ).rejects.toThrow('输入包含违规词')
   })
 })

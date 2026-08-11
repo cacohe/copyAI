@@ -88,16 +88,13 @@ pnpm dev
 │   ├── services/dashboard/     # 业务逻辑（server-only）
 │   │   ├── ai.ts
 │   │   ├── contents.ts
-│   │   ├── history.ts
-│   │   └── moderation.ts
+│   │   └── history.ts
 │   ├── types/dashboard/        # 类型定义
 │   └── proxy.ts                # 路由鉴权（Clerk）
 ├── prisma/                     # Prisma schema 与迁移
 ├── public/                     # 静态资源
 └── package.json 等配置文件     # 保留在根目录
 ```
-
-站内数据读写统一通过 **Server Actions**（`src/app/actions/dashboard.ts`），不暴露 REST API。
 
 ## 许可证
 
