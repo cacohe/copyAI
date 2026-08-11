@@ -14,11 +14,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "cannot get user info" }, { status: 401 })
   }
 
-  // 3. 安全检测
+  // 2. 安全检测
   const isSafe = await checkContentSafe(`${topic} ${keywords}`)
   if (!isSafe) return NextResponse.json({ error: '输入包含违规词' }, { status: 400 })
 
-  // 4. 生成文案
+  // 3. 生成文案
   const content = await generateAIContent(platform, topic, keywords)
 
   // 5. 存入记录并关联用户

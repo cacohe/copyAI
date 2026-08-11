@@ -1,24 +1,25 @@
-import { post } from "./http-utils";
-
 interface GenerateContentOptions {
   platform: string
   topic: string
   keywords?: string
-  onProgress?: (chunk: string) => void
 }
 
 export async function generateContent({
   platform,
   topic,
-  keywords
+  keywords,
 }: GenerateContentOptions): Promise<string> {
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    body: JSON.stringify({ platform, topic, keywords }),
+    headers: { 'Content-Type': 'application/json' },
+  })
 
-  const copywrite = await fetch('/api/generate', {
-      method: 'POST',
-      body: JSON.stringify({ platform, topic, keywords }), // 把内存里的数据发给后端
-      headers: { 'Content-Type': 'application/json' }
-    });
-  
-  const data = await copywrite.json();
-  return data.content;
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.error || '生成失败')
+  }
+
+  return data.content
 }

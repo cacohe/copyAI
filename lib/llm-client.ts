@@ -13,7 +13,7 @@ export async function callLLM(messages: ChatMessage[]) {
 
   // --- 1. 协议适配层 ---
   let fetchUrl = endpoint;
-  let headers: Record<string, string> = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
   let body: any;

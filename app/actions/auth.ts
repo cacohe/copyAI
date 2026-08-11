@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 
-export async function saveContent(platform: string, theme: string, keywords: string, content: string): Promise<{ success: boolean; message?: string }> {
+export async function saveContent(platform: string, topic: string, keywords: string, content: string): Promise<{ success: boolean; message?: string }> {
   const supabase = createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
@@ -12,7 +12,7 @@ export async function saveContent(platform: string, theme: string, keywords: str
     .from('generated_contents')
     .insert({
       platform,
-      theme,
+      topic,
       keywords,
       content,
       user_id: user.id, // 自动关联当前登录用户

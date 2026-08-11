@@ -98,7 +98,7 @@ function PasswordInput({ value, onChange, disabled }: PasswordInputProps) {
       <div className="flex items-center justify-between">
         <Label htmlFor="password">{t("login.password")}</Label>
         <Link
-          href="/forgot-password"
+          href="#"
           className="text-sm text-muted-foreground hover:text-foreground"
         >
           {t("login.forgotPassword")}

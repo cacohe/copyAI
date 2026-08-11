@@ -1,18 +1,18 @@
-// app/api/logout/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST() {
   try {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+
     const cookieStore = await cookies();
-    
-    // 删除 Supabase tokens
-    cookieStore.delete('supabase-access-token');
-    cookieStore.delete('supabase-refresh-token');
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: '已退出登录' 
+    cookieStore.delete('auth-token');
+
+    return NextResponse.json({
+      success: true,
+      message: '已退出登录',
     });
   } catch (error) {
     console.error('Logout error:', error);

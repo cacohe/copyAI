@@ -1,9 +1,8 @@
-// middleware.ts
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
+export async function proxy(request: NextRequest) {
+  const response = NextResponse.next({
     request: {
       headers: request.headers,
     },
@@ -34,7 +33,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // 已登录用户访问登录页,重定向到首页
+  // 已登录用户访问登录页,重定向到 dashboard
   if (user && request.nextUrl.pathname === '/login') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }

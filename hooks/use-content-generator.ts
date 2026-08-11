@@ -27,9 +27,6 @@ export function useContentGenerator() {
         platform: platformLabel,
         topic,
         keywords,
-        onProgress: (chunk) => {
-          setGeneratedContent((prev) => prev + chunk)
-        },
       })
 
       setGeneratedContent(content)
