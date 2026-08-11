@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model GeneratedContent {
+  id        BigInt   @id @default(autoincrement())
+  userId    String   @map("user_id")
+  title     String?  @db.VarChar(255)
+  platform  String   @db.VarChar(50)
+  topic     String   @db.VarChar(255)
+  keywords  String?  @db.VarChar(500)
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([platform])
+  @@map("generated_contents")
+}
+
+model UserProfile {
+  id        String   @id
+  username  String   @unique @db.VarChar(100)
+  avatarUrl String?  @map("avatar_url") @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("user_profiles")
+}

@@ -6,7 +6,7 @@
 
 - **多平台支持**：为小红书、微信公众号、抖音、微博等平台生成内容
 - **AI 驱动**：使用 LLM API（OpenAI、Gemini、DeepSeek 等）进行智能内容生成
-- **用户认证**：使用 Supabase 进行安全的登录/注册
+- **用户认证**：使用 Clerk 进行安全的登录/注册
 - **历史管理**：保存和管理生成的内容历史
 - **多语言支持**：支持英语和中文
 - **主题支持**：深色和浅色模式
@@ -15,8 +15,8 @@
 
 - **框架**：Next.js 16 (App Router)
 - **UI**：React 19, Radix UI, Tailwind CSS 4
-- **数据库**：Supabase (PostgreSQL)
-- **认证**：Supabase Auth
+- **数据库**：Neon (PostgreSQL) + Prisma
+- **认证**：Clerk
 - **AI**：OpenAI 兼容 API（可配置）
 
 ## 快速开始
@@ -30,9 +30,16 @@ pnpm install
 2. 配置环境变量：
 
 ```bash
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_supabase_anon_key
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/login
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/register
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+
+# Neon（PostgreSQL）
+DATABASE_URL=postgresql://user:password@host.neon.tech/neondb?sslmode=require
 
 # LLM API
 AI_API_KEY=your_api_key
@@ -41,9 +48,17 @@ AI_MODEL_NAME=your_model_name
 AI_API_FORMAT=openai  # 或 gemini
 ```
 
-3. 设置 Supabase 数据库：
+3. 初始化数据库：
 
-在 Supabase 仪表板中运行 `supabase.sql` 中的 SQL 命令。
+```bash
+pnpm db:migrate
+```
+
+首次本地开发也可使用：
+
+```bash
+pnpm db:push
+```
 
 4. 运行开发服务器：
 
@@ -56,26 +71,33 @@ pnpm dev
 ## 项目结构
 
 ```
-├── app/                    # Next.js app router 页面
-│   ├── api/               # API 路由
-│   │   ├── (auth)/        # 认证 API（登录、注册、登出）
-│   │   └── (dashboard)/   # 仪表板 API（生成、历史）
-│   ├── dashboard/         # 仪表板页面
-│   └── page.tsx           # 落地页
-├── components/            # React 组件
-│   ├── common/            # 共享组件
-│   ├── dashboard/         # 仪表板组件
-│   ├── login/             # 登录页面组件
-│   ├── ui/                # UI 组件（基于 Radix）
-│   └── welcome/           # 落地页组件
-├── contexts/              # React 上下文
-├── hooks/                 # 自定义 React Hooks
-├── lib/                   # 工具库
-│   ├── supabase/          # Supabase 客户端
-│   └── llm-client.ts      # LLM API 客户端
-├── services/              # 业务逻辑服务
-└── types/                 # TypeScript 类型定义
+├── src/                        # 应用程序代码
+│   ├── app/                    # Next.js App Router
+│   │   ├── (auth)/             # 登录、注册（Clerk）
+│   │   ├── (dashboard)/        # 仪表板路由组
+│   │   ├── actions/            # Server Actions
+│   │   └── page.tsx            # 落地页
+│   ├── components/             # React 组件
+│   ├── hooks/                  # 客户端 Hooks
+│   ├── lib/                    # 工具、常量、基础设施
+│   │   ├── auth/               # Clerk
+│   │   ├── constants/          # 平台、落地页配置
+│   │   ├── prisma.ts           # server-only
+│   │   └── llm-client.ts       # server-only
+│   ├── messages/               # 多语言文案
+│   ├── services/dashboard/     # 业务逻辑（server-only）
+│   │   ├── ai.ts
+│   │   ├── contents.ts
+│   │   ├── history.ts
+│   │   └── moderation.ts
+│   ├── types/dashboard/        # 类型定义
+│   └── proxy.ts                # 路由鉴权（Clerk）
+├── prisma/                     # Prisma schema 与迁移
+├── public/                     # 静态资源
+└── package.json 等配置文件     # 保留在根目录
 ```
+
+站内数据读写统一通过 **Server Actions**（`src/app/actions/dashboard.ts`），不暴露 REST API。
 
 ## 许可证
 

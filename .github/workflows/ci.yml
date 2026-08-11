@@ -33,6 +33,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
+
       - name: Typecheck
         run: pnpm typecheck
 
@@ -45,5 +50,6 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: test-anon-key
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ci_placeholder_key
+          CLERK_SECRET_KEY: sk_test_ci_placeholder_key
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
