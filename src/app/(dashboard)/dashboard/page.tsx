@@ -27,10 +27,14 @@ export default function DashboardPage() {
     history,
     selectedHistory,
     selectedHistoryItem,
+    isLoading,
+    error,
     addToHistory,
     selectHistory,
     clearSelection,
     deleteHistory,
+    clearHistory,
+    reloadHistory,
   } = useHistory()
 
   const displayContent = selectedHistoryItem?.content ?? generatedContent
@@ -66,6 +70,15 @@ export default function DashboardPage() {
     }
   }
 
+  const handleClearHistory = async () => {
+    try {
+      await clearHistory()
+      setGeneratedContent("")
+    } catch {
+      // clearHistory restores state on failure
+    }
+  }
+
   return (
     <div className="flex flex-1 overflow-hidden">
       <GeneratorPanel
@@ -91,8 +104,12 @@ export default function DashboardPage() {
       <HistoryPanel
         history={history}
         selectedHistory={selectedHistory}
+        isLoading={isLoading}
+        error={error}
         onSelectHistory={handleSelectHistory}
         onDeleteHistory={handleDeleteHistory}
+        onClearHistory={handleClearHistory}
+        onRetry={reloadHistory}
       />
     </div>
   )

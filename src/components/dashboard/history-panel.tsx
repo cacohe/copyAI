@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Clock, Trash2 } from "lucide-react"
+import { Clock, Loader2, Trash2 } from "lucide-react"
 import { useLanguage } from "@/components/common/language-provider"
 import { HistoryItem } from "@/types/dashboard/history"
 import { formatTimeAgo } from "@/lib/utils/time"
@@ -8,53 +8,119 @@ import { formatTimeAgo } from "@/lib/utils/time"
 interface HistoryPanelProps {
   history: HistoryItem[]
   selectedHistory: string | null
+  isLoading: boolean
+  error: string | null
   onSelectHistory: (item: HistoryItem) => void
   onDeleteHistory: (id: string) => void
+  onClearHistory: () => void
+  onRetry: () => void
 }
 
-// 历史文案面板
 export function HistoryPanel({
   history,
   selectedHistory,
+  isLoading,
+  error,
   onSelectHistory,
   onDeleteHistory,
+  onClearHistory,
+  onRetry,
 }: HistoryPanelProps) {
   const { t } = useLanguage()
 
+  const handleClear = () => {
+    if (history.length === 0) return
+    if (window.confirm(t("dashboard.clearHistoryConfirm"))) {
+      onClearHistory()
+    }
+  }
+
   return (
     <aside className="flex h-full min-h-0 w-80 shrink-0 flex-col border-l border-border bg-card">
-      <HistoryHeader historyCount={history.length} />
+      <HistoryHeader
+        historyCount={history.length}
+        canClear={!isLoading && history.length > 0}
+        onClear={handleClear}
+      />
       <div className="min-h-0 flex-1 overflow-hidden">
-        <ScrollArea className="h-full">
-          {history.length > 0 ? (
-            <HistoryList
-              history={history}
-              selectedHistory={selectedHistory}
-              onSelectHistory={onSelectHistory}
-              onDeleteHistory={onDeleteHistory}
-            />
-          ) : (
-            <EmptyHistory />
-          )}
-        </ScrollArea>
+        {error ? (
+          <HistoryError onRetry={onRetry} />
+        ) : isLoading && history.length === 0 ? (
+          <HistoryLoading />
+        ) : (
+          <ScrollArea className="h-full">
+            {history.length > 0 ? (
+              <HistoryList
+                history={history}
+                selectedHistory={selectedHistory}
+                onSelectHistory={onSelectHistory}
+                onDeleteHistory={onDeleteHistory}
+              />
+            ) : (
+              <EmptyHistory />
+            )}
+          </ScrollArea>
+        )}
       </div>
     </aside>
   )
 }
 
-// 历史生成文案 头部组件
-function HistoryHeader({ historyCount }: { historyCount: number }) {
+function HistoryHeader({
+  historyCount,
+  canClear,
+  onClear,
+}: {
+  historyCount: number
+  canClear: boolean
+  onClear: () => void
+}) {
   const { t } = useLanguage()
 
   return (
-    <div className="flex items-center justify-between border-b border-border p-4">
+    <div className="flex items-center justify-between gap-2 border-b border-border p-4">
       <div>
         <h2 className="font-semibold">{t("dashboard.history")}</h2>
         <p className="text-xs text-muted-foreground">
           {historyCount} {t("dashboard.historyCount")}
         </p>
       </div>
-      <Clock className="h-4 w-4 text-muted-foreground" />
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 shrink-0 text-muted-foreground hover:text-destructive"
+        disabled={!canClear}
+        onClick={onClear}
+      >
+        <Trash2 className="h-4 w-4" />
+        {t("dashboard.clearHistory")}
+      </Button>
+    </div>
+  )
+}
+
+function HistoryLoading() {
+  const { t } = useLanguage()
+
+  return (
+    <div className="flex h-40 flex-col items-center justify-center text-center">
+      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <p className="mt-2 text-sm text-muted-foreground">
+        {t("dashboard.historyLoading")}
+      </p>
+    </div>
+  )
+}
+
+function HistoryError({ onRetry }: { onRetry: () => void }) {
+  const { t } = useLanguage()
+
+  return (
+    <div className="flex h-40 flex-col items-center justify-center gap-3 px-6 text-center">
+      <p className="text-sm text-destructive">{t("dashboard.historyError")}</p>
+      <Button variant="outline" size="sm" onClick={onRetry}>
+        {t("dashboard.retry")}
+      </Button>
     </div>
   )
 }
@@ -66,7 +132,6 @@ interface HistoryListProps {
   onDeleteHistory: (id: string) => void
 }
 
-// 历史生成文案 列表组件
 function HistoryList({
   history,
   selectedHistory,
@@ -95,7 +160,6 @@ interface HistoryItemCardProps {
   onDelete: () => void
 }
 
-// 历史生成文案 单个文案卡片组件
 function HistoryItemCard({
   item,
   isSelected,
@@ -150,7 +214,6 @@ function HistoryItemCard({
   )
 }
 
-// 历史生成文案 空状态组件
 function EmptyHistory() {
   const { t } = useLanguage()
 
