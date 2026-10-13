@@ -35,7 +35,7 @@
 ## 项目结构
 
 ```
-copywriter-generator/
+copyAI/
 ├── .github/workflows/ci.yml       # CI 流水线
 ├── docs/
 │   └── NOTES.md                   # 学习笔记
